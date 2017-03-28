@@ -10,11 +10,16 @@ make use of an Atmel procressor, and so to installing this software will require
 using the avr-toolchain as well as dfu-programmer >= 0.7.0.
 
 Once these are installed, clone this repository. Then, once inside the repo
-folder run "$ sudo make". Sudo is required in order to communicate with the
-"La Fortuna" via USB.
+folder run...
+`$ sudo make`.
+
+Sudo is required in order to communicate with the "La Fortuna" via USB.
 
 ## Usage
 To use Fortexta, include fortexta.c in your project.
 
-Then use the openFortexta(char*, int) method, the first argument being the
-string to be edited and the second being it's initial length.
+Then use:
+```
+openFortexta(char*, int)
+```
+The first argument being the string to be edited and the second being it's initial length.
