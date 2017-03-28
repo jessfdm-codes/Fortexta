@@ -20,22 +20,23 @@ void inputCursorDown();
 volatile int8_t delta;
 
 char *text;
-uint16_t caret;
-uint16_t length;
-uint8_t inputBarX, inputBarY;
-char inputBar[3][26] = {
+uint16_t caret; //Positio in the string
+uint16_t length; //Length of the string
+uint8_t inputBarX, inputBarY; //Position on keyboard
+char inputBar[3][26] = { //Keyboard
   {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'},
   {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'},
   {'0','1','2','3','4','5','6','7','8','9',' ','!',',','.','$','%','^','&','*','(',')','-','+','=','_','?'}
 };
 
-uint8_t fortexta_editing;
+uint8_t fortexta_editing; //set to 0 to save & close
 
 int main() {
 
   /* Initialize screen */
   init_lcd();
 
+  //Test string
   char* str = "hello world how are you today";
 
   openFortexta(str, 29);
@@ -48,6 +49,7 @@ int main() {
   return 0;
 }
 
+//Open Fortexta with the given string
 void openFortexta(char *editStr, uint16_t len){
 
     fortexta_editing = 1;
@@ -65,6 +67,7 @@ void openFortexta(char *editStr, uint16_t len){
 
 }
 
+//Used in the openning procress to set up internal settings
 void init_fortexta(){
   clear_screen();
   caret = 0;
@@ -105,6 +108,7 @@ void init_fortexta(){
 
 }
 
+//Timer ISR
 ISR( TIMER0_COMPA_vect ) {
      static int8_t last;
      int8_t new, diff;
@@ -183,11 +187,13 @@ ISR( TIMER0_COMPA_vect ) {
 
     //Center button
     if (!((PINE) & _BV(PE7))){
-      if (inputBarX == sizeof(inputBar[0])){ //If on special button
-        //DoNothing for now
+      //If on special button
+      if (inputBarX == sizeof(inputBar[0])){
         if (inputBarY == 0){
+          //Backspace
           writeChar(*" ");
         } else if (inputBarY == 2) {
+          //Save
           fortexta_editing = 0;
         }
       } else {
@@ -258,16 +264,19 @@ void inputCursorDown(){
   }
 }
 
-
+//White the given character into the text on cursor position
 void writeChar(char a){
   text[caret] = a;
 }
 
+//Redraw the whole screen
 void updateScreen(){
   display.x = 0;
   display.y = 0;
   uint16_t i = 0;
+  //Write out the string
   for (i = 0; i < length; i++){
+    //Highlight the cursor position
     if (i == caret){
       display_color(BLACK, WHITE_SMOKE);
       display_char(text[i]);
@@ -280,15 +289,15 @@ void updateScreen(){
   }
 
 
-
+  //Draw Keyboard
   display.x = 0;
   display.y = display.height-24;
-  //Draw lower bar
 
   uint8_t x = 0;
   uint8_t y = 0;
   uint8_t maxX = 0;
 
+  //Loop through standard keyboard
   for (y = 0; y < 3; y++){
     for (x = 0; x < 26; x++){
       if (x == inputBarX && y == inputBarY){
@@ -301,12 +310,12 @@ void updateScreen(){
         display_color(WHITE_SMOKE, BLACK);
       }
     }
-    maxX = display.x;
+    maxX = display.x; //The furthest point the keyboard draws on the x axis
     display.x = 0;
     display.y += 8;
   }
 
-
+  //Draw special keyboard buttons
   display.x = maxX + 8;
   display.y = display.height - 24;
 
