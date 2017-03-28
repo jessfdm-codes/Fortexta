@@ -4,17 +4,6 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-/*
-IO notes
-
-SWE (east button) = PC3   := caretRight
-SWW (west button) = PC5   := caretLeft
-
-
-
-*/
-
-
 
 void addChar(const char a);
 void updateScreen();
